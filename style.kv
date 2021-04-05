@@ -1,0 +1,322 @@
+#:import xcamera kivy_garden.xcamera.xcamera
+
+<CameraBox@MDBoxLayout>:
+    orientation: "vertical"
+    XCamera:
+        id: camera
+
+<SwipeToDeleteItem>:
+    size_hint_y: None
+    height: content.height
+
+    MDCardSwipeLayerBox:
+        padding: "8dp"
+
+        MDIconButton:
+            icon: "trash-can"
+            pos_hint: {"center_y": .5}
+            on_release: app.remove_item(root)
+
+    MDCardSwipeFrontBox:
+        padding: "4dp"
+        spacing: "4dp"
+
+        ThreeLineAvatarListItem:
+            id: content
+            text: root.name
+            secondary_text: root.phone
+            tertiary_text: root.email
+            _no_ripple_effect: True
+            on_press: app.viewContact(root)
+
+            ImageLeftWidget:
+                source: root.img_source
+# Менеджер экранов, описывающих их количество и названия
+ScreenManager:
+    MainScreen:
+    AddContactScreen:
+    UpdateContactScreen:
+    ViewContactScreen:
+    CameraScreen:
+
+<CameraScreen>:
+    name: 'CameraScreen'
+    ScatterLayout:
+        do_rotation: False
+        do_scale: False
+        do_translation: False
+        rotation: -90
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        size_hint: None, None
+        size: root.height, root.width
+
+        CameraBox:
+            id: camera_box
+    MDBoxLayout:
+        adaptive_width: True
+        size_hint_y: None
+        height: "56dp"
+        padding: "10dp"
+        pos_hint: {"center_x": .5}
+
+        MDFloatingActionButton:
+            icon: "camera-outline"
+            opposite_colors: True
+            height: "70dp"
+            width: "70dp"
+            elevation: 8
+            md_bg_color: app.theme_cls.primary_color
+            on_press: app.take_photo()
+
+
+# Разметка стартового экрана
+<MainScreen>:
+    name: 'MainScreen'
+    BoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: 'Phone book'
+
+        ScrollView:
+            pos_hint: {"center_x": .5}
+            MDList:
+                id: my_list
+
+        MDBoxLayout:
+            adaptive_height: True
+            orientation: "vertical"
+
+            MDBoxLayout:
+                id: box
+                padding: "10dp"
+                adaptive_size: True
+                spacing: "10dp"
+                orientation: "vertical"
+                pos_hint: {"right": 1}
+
+                MDBoxLayout:
+                    adaptive_width: True
+                    size_hint_y: None
+                    height: "56dp"
+                    spacing: "10dp"
+                    pos_hint: {"center_x": .5}
+
+                    MDFloatingActionButton:
+                        icon: "plus"
+                        opposite_colors: True
+                        elevation: 8
+                        md_bg_color: 1, 1, 1, 1
+                        on_press:
+                            app.change_screen('AddContactScreen')
+
+
+# Разметка экрана добавления элемента
+<AddContactScreen>:
+    name: 'AddContactScreen'
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: 'Adding new contact'
+            left_action_items:[["arrow-left", lambda x: app.change_screen("MainScreen")]]
+
+        Screen:
+            MDBoxLayout:
+                orientation: "vertical"
+                Widget:
+                    size_hint_y: None
+                    height: 150
+
+                ScatterLayout:
+                    id: to_rotate
+                    do_rotation: False
+                    do_scale: False
+                    do_translation: False
+                    size_hint_y: 0.7
+
+                    MDIcon:
+                        id: icon_id
+                        halign: "center"
+                        icon: "account-plus"
+                        font_size: "128dp"
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    padding: 16
+                    spacing: 16
+                    MDTextFieldRound:
+                        id : input_name
+                        icon_left: "account"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Name'
+
+                    MDTextFieldRound:
+                        id : input_phone
+                        icon_left: "phone"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Phone'
+
+                    MDTextFieldRound:
+                        id : input_email
+                        icon_left: "email"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Email'
+
+                    MDBoxLayout:
+                        adaptive_width: True
+                        size_hint_y: None
+                        height: "100dp"
+                        spacing: "10dp"
+                        padding: "10dp"
+                        pos_hint: {"center_x": .5}
+
+                        MDFillRoundFlatButton:
+                            text:'Back'
+                            on_press:
+                                app.change_screen("MainScreen")
+                        MDFillRoundFlatButton:
+                            text:'Take photo'
+                            on_press:
+                                app.open_camera()
+                        MDFillRoundFlatButton:
+                            text:'Save'
+                            on_press:
+                                app.addContact()
+<ViewContactScreen>:
+    name: 'ViewContactScreen'
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: 'Viewing the contact'
+            left_action_items:[["arrow-left", lambda x: app.change_screen("MainScreen")]]
+            right_action_items: [["account-edit", lambda x: app.updateContactStart()]]
+
+        Screen:
+            MDBoxLayout:
+                orientation: "vertical"
+
+                ScatterLayout:
+                    id: to_rotate
+                    do_rotation: False
+                    do_scale: False
+                    do_translation: False
+                    rotation: -90
+                    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    size_hint_x: 0.9
+                    Image:
+                        id: contact_photo
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    padding: 20
+                    spacing: 20
+
+                    MDLabel:
+                        text: ""
+                        id : contact_name
+
+
+                    MDLabel:
+                        text: ""
+                        id : contact_phone
+
+
+                    MDLabel:
+                        text: ""
+                        id : contact_email
+
+
+
+<UpdateContactScreen>:
+    name: 'UpdateContactScreen'
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDToolbar:
+            title: 'Updating the contact'
+            left_action_items:[["arrow-left", lambda x: app.change_screen("MainScreen")]]
+
+        Screen:
+            MDBoxLayout:
+                orientation: "vertical"
+                Widget:
+                    size_hint_y: None
+                    height: 150
+
+                ScatterLayout:
+                    id: to_rotate
+                    do_rotation: False
+                    do_scale: False
+                    rotation: -90
+                    do_translation: False
+                    size_hint_y: 0.7
+                    center_x: 0.5
+
+                    MDIcon:
+                        id: update_icon_id
+                        halign: "center"
+                        icon: "account-plus"
+                        font_size: "128dp"
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    padding: 16
+                    spacing: 16
+                    MDTextFieldRound:
+                        id : update_input_name
+                        icon_left: "account"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Name'
+
+                    MDTextFieldRound:
+                        id : update_input_phone
+                        icon_left: "phone"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Phone'
+
+                    MDTextFieldRound:
+                        id : update_input_email
+                        icon_left: "email"
+                        size_hint_x: 0.7
+                        pos_hint:{'center_x':0.5}
+                        size_hint_y: None
+                        font_size: "25sp"
+                        hint_text:'Email'
+
+                    MDBoxLayout:
+                        adaptive_width: True
+                        size_hint_y: None
+                        height: "100dp"
+                        spacing: "10dp"
+                        padding: "10dp"
+                        pos_hint: {"center_x": .5}
+
+                        MDFillRoundFlatButton:
+                            text:'Back'
+                            on_press:
+                                app.change_screen("MainScreen")
+                        MDFillRoundFlatButton:
+                            text:'Take photo'
+                            on_press:
+                                app.open_camera()
+                        MDFillRoundFlatButton:
+                            text:'Save'
+                            on_press:
+                                app.updateContactFinish()
