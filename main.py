@@ -1,6 +1,7 @@
 import os
 from kivy.lang import Builder
 from kivy.properties import StringProperty
+from kivy.storage.jsonstore import JsonStore
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
@@ -72,37 +73,45 @@ class MyApp(MDApp):
         # Активация разметки
         return self.style
 
-    # def save_data(self):
-    #     save_list = self.style.get_screen('MainScreen').ids.my_list.children[::-1]
-    #     store = JsonStore(storage)
-    #     store.clear()
-    #     for key in save_list:
-    #         if isinstance(key, ListItemWithCheckbox):
-    #             store.put(str(key), text=key.text, checkbox=key.children[0].children[0].active)
+    def save_data(self):
+        save_list = self.style.get_screen('MainScreen').ids.my_list.children[::-1]
+        store = JsonStore(storage)
+        store.clear()
+        for item in save_list:
+            if isinstance(item, SwipeToDeleteItem):
+                store.put(str(item),
+                          contact_name=item.name,
+                          phone=item.phone,
+                          email=item.email,
+                          photo=item.img_source)
 
-    # def load_data(self):
-    #     store = JsonStore(storage)
-    #     if store.count() > 0:
-    #         for key in store:
-    #             item = ListItemWithCheckbox(text=store[key]['text'])
-    #             item.children[0].children[0].active = store[key]['checkbox']
-    #             self.style.get_screen('MainScreen').ids.my_list.add_widget(
-    #                 item
-    #             )
+    def load_data(self):
+        store = JsonStore(storage)
+        if store.count() > 0:
+            for key in store:
+                item = SwipeToDeleteItem(
+                    name=store[key]['contact_name'],
+                    phone=store[key]['phone'],
+                    email=store[key]['email'],
+                    img_source=store[key]['photo']
+                )
+                self.style.get_screen('MainScreen').ids.my_list.add_widget(
+                    item
+                )
 
     def on_start(self):
-        # try:
-        #     self.load_data()
-        # except FileNotFoundError:
-        #     pass
+        try:
+            self.load_data()
+        except FileNotFoundError:
+            pass
         super().on_start()
 
     def on_stop(self):
-        # self.save_data()
+        self.save_data()
         super().on_stop()
 
     def on_pause(self):
-        # self.save_data()
+        self.save_data()
         return super().on_pause()
 
     def on_resume(self):
@@ -202,7 +211,6 @@ class MyApp(MDApp):
     def remove_contact(self):
         self.style.get_screen('MainScreen').ids.my_list.remove_widget(self.updating_item)
         self.change_screen('MainScreen')
-
 
     def open_camera(self):
         self.change_screen('CameraScreen')
