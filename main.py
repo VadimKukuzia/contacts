@@ -4,11 +4,16 @@ from kivy.properties import StringProperty
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
 from kivymd.uix.card import MDCardSwipe
+from kivymd.uix.dialog import MDDialog
 from kivymd.uix.snackbar import Snackbar
 import shutil
 
-# TODO: Пофиксить апдейт скрин
+try:
+    from PIL import Image
+except ImportError:
+    pass
 
 app_folder = os.path.dirname(os.path.abspath(__file__))
 storage = os.path.join(app_folder, 'Data.json')
@@ -50,10 +55,6 @@ class SwipeToDeleteItem(MDCardSwipe):
     phone = StringProperty()
     email = StringProperty()
     img_source = StringProperty()
-
-
-class RotatedImage(Image):
-    pass
 
 
 class MyApp(MDApp):
@@ -198,8 +199,10 @@ class MyApp(MDApp):
             # Показываем уведомление о пустом поле ввода
             Snackbar(text='Enter the value').show()
 
-    def remove_item(self, instance):
-        self.style.get_screen('MainScreen').ids.my_list.remove_widget(instance)
+    def remove_contact(self):
+        self.style.get_screen('MainScreen').ids.my_list.remove_widget(self.updating_item)
+        self.change_screen('MainScreen')
+
 
     def open_camera(self):
         self.change_screen('CameraScreen')
@@ -216,9 +219,16 @@ class MyApp(MDApp):
             os.makedirs(app_folder + '/photos')
             shutil.move(filename, img_src)
 
+        try:
+            img = Image.open(img_src)
+            img = img.rotate(-90, Image.NEAREST, expand=1)
+            img.save(img_src)
+        except Exception:
+            pass
+
         self.style.get_screen('AddContactScreen').ids.icon_id.source = img_src
-        self.style.get_screen('AddContactScreen').ids.to_rotate.rotation = -90
-        # self.style.get_screen('UpdateContactScreen').ids.to_rotate.rotation = -90
+        # self.style.get_screen('AddContactScreen').ids.to_rotate.rotation = -90
+        # # self.style.get_screen('UpdateContactScreen').ids.to_rotate.rotation = -90
         self.style.get_screen('UpdateContactScreen').ids.update_icon_id.source = img_src
         self.on_previous_screen()
 
