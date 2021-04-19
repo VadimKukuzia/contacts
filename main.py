@@ -5,16 +5,14 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivymd.app import MDApp
-from kivymd.uix.button import MDFlatButton
+
 from kivymd.uix.card import MDCardSwipe
-from kivymd.uix.dialog import MDDialog
+
 from kivymd.uix.snackbar import Snackbar
 import shutil
 
-try:
-    from PIL import Image
-except ImportError:
-    pass
+from PIL import Image
+
 
 app_folder = os.path.dirname(os.path.abspath(__file__))
 storage = os.path.join(app_folder, 'Data.json')
