@@ -11,8 +11,7 @@ from kivymd.uix.card import MDCardSwipe
 from kivymd.uix.snackbar import Snackbar
 import shutil
 
-from PIL import Image
-
+from PIL import Image, ImageOps
 
 app_folder = os.path.dirname(os.path.abspath(__file__))
 storage = os.path.join(app_folder, 'Data.json')
@@ -37,15 +36,6 @@ class CameraScreen(Screen):
 
 class ViewContactScreen(Screen):
     pass
-
-
-# Добавление менеджера и трёх кастомных экранов
-sm = ScreenManager()
-sm.add_widget(MainScreen(name='MainScreen'))
-sm.add_widget(AddContactScreen(name='AddContactScreen'))
-sm.add_widget(UpdateContactScreen(name='UpdateContactScreen'))
-sm.add_widget(CameraScreen(name='CameraScreen'))
-sm.add_widget(ViewContactScreen(name='ViewContactScreen'))
 
 
 class SwipeToDeleteItem(MDCardSwipe):
@@ -212,6 +202,7 @@ class MyApp(MDApp):
 
     def open_camera(self):
         self.change_screen('CameraScreen')
+        Snackbar(text='Keep the object as centered as possible').show()
 
     def take_photo(self):
         self.camera.shoot()
@@ -229,6 +220,11 @@ class MyApp(MDApp):
             img = Image.open(img_src)
             img = img.rotate(-90, Image.NEAREST, expand=1)
             img.save(img_src)
+            mask = Image.open('mask1536.png').convert('L')
+            output = ImageOps.fit(img, mask.size, centering=(0.5, 0.5))
+            output.putalpha(mask)
+            img_src = img_src.replace('.jpg', '.png')
+            output.save(img_src)
         except Exception:
             pass
 

@@ -54,16 +54,13 @@ ScreenManager:
             id: camera_box
     MDBoxLayout:
         adaptive_width: True
-        size_hint_y: None
-        height: "56dp"
         padding: "10dp"
         pos_hint: {"center_x": .5}
 
         MDFloatingActionButton:
             icon: "camera-outline"
             opposite_colors: True
-            height: "70dp"
-            width: "70dp"
+            size: "70dp", "70dp"
             elevation: 8
             md_bg_color: app.theme_cls.primary_color
             on_press: app.take_photo()
@@ -124,23 +121,14 @@ ScreenManager:
         Screen:
             MDBoxLayout:
                 orientation: "vertical"
-                Widget:
-                    size_hint_y: None
-                    height: 150
 
-                ScatterLayout:
-                    id: to_rotate
-                    do_rotation: False
-                    do_scale: False
-                    do_translation: False
+
+                MDIcon:
+                    id: icon_id
+                    halign: "center"
+                    icon: "account-plus"
+                    font_size: "128dp"
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                    size_hint_x: 0.9
-
-                    MDIcon:
-                        id: icon_id
-                        halign: "center"
-                        icon: "account-plus"
-                        font_size: "128dp"
 
                 MDBoxLayout:
                     orientation: "vertical"
