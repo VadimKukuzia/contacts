@@ -121,14 +121,25 @@ ScreenManager:
         Screen:
             MDBoxLayout:
                 orientation: "vertical"
+                Widget:
+                    size_hint_y: None
+                    height: 150
 
+                ScatterLayout:
+                    id: to_rotate
+                    do_rotation: False
+                    do_scale: False
 
-                MDIcon:
-                    id: icon_id
-                    halign: "center"
-                    icon: "account-plus"
-                    font_size: "128dp"
+                    do_translation: False
                     pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    size_hint_x: 0.9
+
+                    MDIcon:
+                        id: icon_id
+                        halign: "center"
+                        icon: "account-plus"
+                        font_size: "128dp"
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
 
                 MDBoxLayout:
                     orientation: "vertical"
@@ -194,6 +205,9 @@ ScreenManager:
         Screen:
             MDBoxLayout:
                 orientation: "vertical"
+                Widget:
+                    size_hint_y: None
+                    height: 150
 
                 ScatterLayout:
                     id: to_rotate
