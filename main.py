@@ -4,9 +4,11 @@ from kivy.properties import StringProperty
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy_garden.xcamera.xcamera import XCameraIconButton
 from kivymd.app import MDApp
 
 from kivymd.uix.card import MDCardSwipe
+from kivymd.uix.list import ThreeLineAvatarListItem
 
 from kivymd.uix.snackbar import Snackbar
 import shutil
@@ -38,8 +40,7 @@ class ViewContactScreen(Screen):
     pass
 
 
-class SwipeToDeleteItem(MDCardSwipe):
-    type_swipe = "hand"
+class ContactListItem(ThreeLineAvatarListItem):
     name = StringProperty()
     phone = StringProperty()
     email = StringProperty()
@@ -53,7 +54,6 @@ class MyApp(MDApp):
         # Создание списка выполненных заданий для отслеживания
         self.style = Builder.load_file('style.kv')
         self.camera = self.style.get_screen('CameraScreen').ids.camera_box.ids.camera
-        # self.camera.remove_widget(self.camera.children[0])
         self.camera.on_picture_taken = self.picture_taken
         self.screen_history = []
 
@@ -66,7 +66,7 @@ class MyApp(MDApp):
         store = JsonStore(storage)
         store.clear()
         for item in save_list:
-            if isinstance(item, SwipeToDeleteItem):
+            if isinstance(item, ContactListItem):
                 store.put(str(item),
                           contact_name=item.name,
                           phone=item.phone,
@@ -77,7 +77,7 @@ class MyApp(MDApp):
         store = JsonStore(storage)
         if store.count() > 0:
             for key in store:
-                item = SwipeToDeleteItem(
+                item = ContactListItem(
                     name=store[key]['contact_name'],
                     phone=store[key]['phone'],
                     email=store[key]['email'],
@@ -126,10 +126,10 @@ class MyApp(MDApp):
             if input_photo:
                 # Добавление записи
                 self.style.get_screen('MainScreen').ids.my_list.add_widget(
-                    SwipeToDeleteItem(name=input_name,
-                                      phone=input_phone,
-                                      email=input_email,
-                                      img_source=input_photo)
+                    ContactListItem(name=input_name,
+                                    phone=input_phone,
+                                    email=input_email,
+                                    img_source=input_photo)
                 )
                 # Переход на стартовый экран
                 self.change_screen('MainScreen')
@@ -229,8 +229,6 @@ class MyApp(MDApp):
             pass
 
         self.style.get_screen('AddContactScreen').ids.icon_id.source = img_src
-        # self.style.get_screen('AddContactScreen').ids.to_rotate.rotation = -90
-        # # self.style.get_screen('UpdateContactScreen').ids.to_rotate.rotation = -90
         self.style.get_screen('UpdateContactScreen').ids.update_icon_id.source = img_src
         self.on_previous_screen()
 

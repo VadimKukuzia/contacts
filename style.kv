@@ -5,32 +5,17 @@
     XCamera:
         id: camera
 
-<SwipeToDeleteItem>:
-    size_hint_y: None
-    height: content.height
+<ContactListItem>:
+    id: content
+    text: root.name
+    secondary_text: root.phone
+    tertiary_text: root.email
+    _no_ripple_effect: True
+    on_press: app.viewContact(root)
 
-    MDCardSwipeLayerBox:
-        padding: "8dp"
+    ImageLeftWidget:
+        source: root.img_source
 
-        MDIconButton:
-            icon: "trash-can"
-            pos_hint: {"center_y": .5}
-
-
-    MDCardSwipeFrontBox:
-        padding: "4dp"
-        spacing: "4dp"
-
-        ThreeLineAvatarListItem:
-            id: content
-            text: root.name
-            secondary_text: root.phone
-            tertiary_text: root.email
-            _no_ripple_effect: True
-            on_press: app.viewContact(root)
-
-            ImageLeftWidget:
-                source: root.img_source
 # Менеджер экранов, описывающих их количество и названия
 ScreenManager:
     MainScreen:
@@ -41,17 +26,19 @@ ScreenManager:
 
 <CameraScreen>:
     name: 'CameraScreen'
-    ScatterLayout:
-        do_rotation: False
-        do_scale: False
-        do_translation: False
-        rotation: -90
-        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    CameraBox:
+        id: camera_box
         size_hint: None, None
         size: root.height, root.width
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        canvas.before:
+            PushMatrix
+            Rotate:
+                angle: -90
+                origin: self.center
+        canvas.after:
+            PopMatrix
 
-        CameraBox:
-            id: camera_box
     MDBoxLayout:
         adaptive_width: True
         padding: "10dp"
@@ -69,43 +56,25 @@ ScreenManager:
 # Разметка стартового экрана
 <MainScreen>:
     name: 'MainScreen'
-    BoxLayout:
-        orientation: "vertical"
-
-        MDToolbar:
-            title: 'Phone book'
-
-        ScrollView:
-            pos_hint: {"center_x": .5}
-            MDList:
-                id: my_list
-
+    MDScreen:
         MDBoxLayout:
-            adaptive_height: True
             orientation: "vertical"
 
-            MDBoxLayout:
-                id: box
-                padding: "10dp"
-                adaptive_size: True
-                spacing: "10dp"
-                orientation: "vertical"
-                pos_hint: {"right": 1}
+            MDToolbar:
+                title: 'Phone book'
 
-                MDBoxLayout:
-                    adaptive_width: True
-                    size_hint_y: None
-                    height: "56dp"
-                    spacing: "10dp"
-                    pos_hint: {"center_x": .5}
+            ScrollView:
+                MDList:
+                    id: my_list
 
-                    MDFloatingActionButton:
-                        icon: "plus"
-                        opposite_colors: True
-                        elevation: 8
-                        md_bg_color: 1, 1, 1, 1
-                        on_press:
-                            app.change_screen('AddContactScreen')
+        MDFloatingActionButton:
+            icon: "plus"
+            opposite_colors: True
+            elevation: 8
+            md_bg_color: 1, 1, 1, 1
+            pos_hint: {"right": 0.99, "top": 0.1}
+            on_press:
+                app.change_screen('AddContactScreen')
 
 
 # Разметка экрана добавления элемента
